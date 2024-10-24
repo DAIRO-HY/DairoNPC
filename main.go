@@ -3,6 +3,7 @@ package main
 import (
 	"DairoNPC/constant"
 	"DairoNPC/session"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -10,8 +11,13 @@ import (
 func main() {
 	var args = os.Args
 	if len(args) < 2 { //测试用
-		args = []string{"-h:127.0.0.1", "-k:njeHds*fs4tfsd", "-t:1781", "-u:1682"}
+		args = []string{"-h:127.0.0.1", "-k:njeHds*fs4tfsd", "-t:1781", "-u:1782"}
 	}
+	fmt.Println("----------------------------------------------------------------------------")
+	for _, it := range args {
+		fmt.Println(it)
+	}
+	fmt.Println("----------------------------------------------------------------------------")
 	for _, it := range args {
 		paramArr := strings.Split(it, ":")
 		switch paramArr[0] {

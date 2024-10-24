@@ -13,5 +13,3 @@ services:
 
       #解决控制台输出中文乱码
       LANG: C.UTF-8
-    volumes:
-      - ./data:/app/data
