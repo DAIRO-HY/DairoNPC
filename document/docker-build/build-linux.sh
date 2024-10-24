@@ -5,7 +5,7 @@ rm DairoNPC.zip
 rm -rf DairoNPC-main
 rm /app/DairoNPC/dairo-npc-linux-amd64
 
-curl -L -o DairoNPC.zip https://github.com/DAIRO-HY/DairoNPC/archive/refs/heads/main.zip
+curl -L -o DairoNPC.zip https://github.com/DAIRO-HY/DairoNPC/archive/refs/heads/main.zip?561
 unzip DairoNPC.zip
 cd DairoNPC-main
 

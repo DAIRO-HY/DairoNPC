@@ -2,7 +2,7 @@ version: '3.1'
 services:
   dairo-npc:
     image: dairopapa/dairo-npc:1.0.0
-#    build: .
+    #    build: .
     restart: always
     container_name: dairo-npc
     network_mode: host
@@ -13,3 +13,12 @@ services:
 
       #解决控制台输出中文乱码
       LANG: C.UTF-8
+
+      #NPS主机
+      NPC_HOST: www.****.com
+      #客户端KEY
+      NPC_KEY: xxxxxxxxxx
+      #TCP端口
+      NPC_TCP: 1781
+      #UDP端口
+      NPC_UDP: 1782
