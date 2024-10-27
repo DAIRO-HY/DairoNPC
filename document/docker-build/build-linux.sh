@@ -39,7 +39,7 @@ GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo
 GOOS=linux GOARCH=arm CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-linux-arm
 
 #编译win-amd64
-GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-win-amd64
+GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-win-amd64.exe
 
 #编译mac-amd64
 GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-mac-amd64
@@ -114,8 +114,8 @@ upload_file_api_response=$(curl -s -X POST \
                             -H "Authorization: Bearer ${github_token}" \
                             -H "X-GitHub-Api-Version: 2022-11-28" \
                             -H "Content-Type: application/octet-stream" \
-                            --data-binary "@./build/dairo-npc-win-amd64" \
-                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-win-amd64")
+                            --data-binary "@./build/dairo-npc-win-amd64.exe" \
+                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-win-amd64.exe")
 echo "上传文件结果:${upload_file_api_response}"
 
 upload_file_api_response=$(curl -s -X POST \
