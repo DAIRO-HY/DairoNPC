@@ -6,15 +6,11 @@ import (
 	"sync"
 )
 
-/**
- * 当前激活的TCP连接池
- */
+// 当前激活的TCP连接池
 var mTcpPoolList map[*TCPPool]bool
 var lock sync.Mutex
 
-/**
- * 创建TCP连接池
- */
+// Create 创建TCP连接池
 func Create(count int) {
 	for i := 0; i < count; i++ {
 
@@ -40,7 +36,7 @@ func removePool(pool *TCPPool) {
 	lock.Unlock()
 }
 
-// 关闭连接池所有链接
+// ShutdownAll 关闭连接池所有链接
 func ShutdownAll() {
 	var closeList []*TCPPool
 	lock.Lock()

@@ -2,7 +2,7 @@ package extension
 
 import "fmt"
 
-// 定义一个自定义错误类型
+// BusinessException 定义一个自定义错误类型
 type BusinessException struct {
 	Code    int
 	Message string

@@ -8,17 +8,17 @@ func WriteAll(tcp net.Conn, data []uint8) error {
 	//要发送的数据总长度
 	total := len(data)
 
-	//已经大宋的数据长度
-	sendedTotal := 0
+	//已经发送的数据长度
+	sendTotal := 0
 
 	for {
 		//n:当前发送的数据长度
-		n, err := tcp.Write(data[sendedTotal:])
+		n, err := tcp.Write(data[sendTotal:])
 		if err != nil {
 			return err
 		}
-		sendedTotal += n
-		if sendedTotal == total {
+		sendTotal += n
+		if sendTotal == total {
 			break
 		}
 	}

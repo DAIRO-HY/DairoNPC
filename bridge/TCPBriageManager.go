@@ -9,7 +9,7 @@ import (
 var bridgeMap map[*TCPBridge]bool
 var lock sync.Mutex
 
-// 开始TCP桥接
+// Start 开始TCP桥接
 func Start(isEncodeData bool, targetAddr string, npcTCP net.Conn) {
 	bridge := &TCPBridge{
 		isEncodeData: isEncodeData,
@@ -28,7 +28,7 @@ func removeBridge(bridge *TCPBridge) {
 	lock.Unlock()
 }
 
-// 关闭所有链接
+// ShutdownAll 关闭所有链接
 func ShutdownAll() {
 	var closeList []*TCPBridge
 	lock.Lock()

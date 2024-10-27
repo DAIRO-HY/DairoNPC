@@ -9,9 +9,7 @@ import (
 	"strings"
 )
 
-/**
- * 等待分配工作的Socket
- */
+// TCPPool 等待分配工作的Socket
 type TCPPool struct {
 	npcTCP net.Conn
 }
@@ -28,13 +26,6 @@ func (mine *TCPPool) start() {
 	mine.waitWork()
 	removePool(mine)
 }
-
-/**
- * 关闭资源
- */
-//func (mine *TCPPool) close() {
-//    this.socket.close()
-//}
 
 /**
  * 发送客户端信息

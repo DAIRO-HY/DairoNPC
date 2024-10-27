@@ -29,7 +29,7 @@ func (mine *NPCSession) start() {
 
 // 从服务端读取基本信息
 func (mine *NPCSession) readServerInfoAndReceive() {
-	header := constant.Key + "|" + constant.Version
+	header := constant.Key + "|" + constant.VERSION
 
 	//发送标记信息
 	if HeaderUtil.SendFlag(mine.npcTCP, HeaderUtil.CLIENT_TO_SERVER_MAIN_CONNECTION, header) != nil {

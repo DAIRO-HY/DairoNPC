@@ -5,26 +5,16 @@ import (
 	"net"
 )
 
-//NPS客户端头部标记
-
-/**
- * 客户端与服务器端通信连接标记
- */
+// 客户端与服务器端通信连接标记
 const CLIENT_TO_SERVER_MAIN_CONNECTION = 0
 
-/**
- * 与客户端通信心跳标记
- */
+// 与客户端通信心跳标记
 const MAIN_HEART_BEAT = 1
 
-/**
- * 向客户端发送clientId
- */
+// 向客户端发送clientId
 const SERVER_TO_CLIENT_ID = 2
 
-/**
- * 向客户端申请TCP连接池请求
- */
+// 向客户端申请TCP连接池请求
 const SERVER_TCP_POOL_REQUEST = 3
 
 /**
@@ -67,7 +57,7 @@ func GetHeader(clientSocket net.Conn) (string, error) {
 	return string(headerData), nil
 }
 
-// 发送一个标记
+// SendFlag 发送一个标记
 // - flag 标记
 // - header 头部信息
 func SendFlag(tcp net.Conn, flag uint8, header string) error {

@@ -4,6 +4,7 @@ import (
 	"DairoNPC/bridge"
 	"DairoNPC/constant"
 	"DairoNPC/pool"
+	"fmt"
 	"net"
 	"time"
 )
@@ -27,14 +28,14 @@ func createConnection() {
 	// 与服务端建立连接
 	tcp, err := net.Dial("tcp", constant.Host+":"+constant.TcpPort)
 	if err != nil {
-		println("-->与主机连接失败:" + constant.Host + ":" + constant.TcpPort)
+		fmt.Println("-->与主机连接失败:" + constant.Host + ":" + constant.TcpPort)
 		return
 	}
 	npcSession = &NPCSession{
 		npcTCP: tcp,
 	}
 	go npcSession.start()
-	println("-->服务开启成功")
+	fmt.Println("-->服务开启成功")
 }
 
 // 检测心跳
