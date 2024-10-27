@@ -13,10 +13,6 @@ projectName="DairoNPC"
 repo="DAIRO-HY/$projectName"
 branch="release"
 
-#最终编译好的二进制文件
-exec_name=dairo-npc-linux-amd64
-exec_file="./$exec_name"
-
 #--------------------------------------获取代码-----------------------------------------
 if [ -d $projectName ]; then
     cd $projectName
@@ -28,11 +24,31 @@ else
 fi
 
 #---------------------------------------编译-----------------------------------------
-if [ -f $exec_file ]; then
-    rm $exec_file
+if [ -d "./build" ]; then
+    rm -rf "./build"
 fi
-go build -o $exec_file
-if [ ! -e $exec_file ]; then
+mkdir "./build"
+
+#编译linux-amd64
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-linux-amd64
+
+#编译linux-arm64
+GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-linux-arm64
+
+#编译linux-arm
+GOOS=linux GOARCH=arm CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-linux-arm
+
+#编译win-amd64
+GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-win-amd64
+
+#编译mac-amd64
+GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-mac-amd64
+
+#编译mac-arm64
+GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o ./build/dairo-npc-mac-arm64
+
+
+if [ ! -e "./build/dairo-npc-mac-arm64" ]; then
     echo "编译失败"
     exit 1
 fi
@@ -65,19 +81,64 @@ echo "本地发布ID:${release_id}"
 
 
 #---------------------------------------上传编译好的二进制文件----------------------------------
+
 upload_file_api_response=$(curl -s -X POST \
                             -H "Accept: application/vnd.github+json" \
                             -H "Authorization: Bearer ${github_token}" \
                             -H "X-GitHub-Api-Version: 2022-11-28" \
                             -H "Content-Type: application/octet-stream" \
-                            --data-binary "@${exec_file}" \
-                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=${exec_name}")
+                            --data-binary "@./build/dairo-npc-linux-amd64" \
+                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-linux-amd64")
+echo "上传文件结果:${upload_file_api_response}"
 
+upload_file_api_response=$(curl -s -X POST \
+                            -H "Accept: application/vnd.github+json" \
+                            -H "Authorization: Bearer ${github_token}" \
+                            -H "X-GitHub-Api-Version: 2022-11-28" \
+                            -H "Content-Type: application/octet-stream" \
+                            --data-binary "@./build/dairo-npc-linux-arm64" \
+                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-linux-arm64")
+echo "上传文件结果:${upload_file_api_response}"
+
+upload_file_api_response=$(curl -s -X POST \
+                            -H "Accept: application/vnd.github+json" \
+                            -H "Authorization: Bearer ${github_token}" \
+                            -H "X-GitHub-Api-Version: 2022-11-28" \
+                            -H "Content-Type: application/octet-stream" \
+                            --data-binary "@./build/dairo-npc-linux-arm" \
+                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-linux-arm")
+echo "上传文件结果:${upload_file_api_response}"
+
+upload_file_api_response=$(curl -s -X POST \
+                            -H "Accept: application/vnd.github+json" \
+                            -H "Authorization: Bearer ${github_token}" \
+                            -H "X-GitHub-Api-Version: 2022-11-28" \
+                            -H "Content-Type: application/octet-stream" \
+                            --data-binary "@./build/dairo-npc-win-amd64" \
+                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-win-amd64")
+echo "上传文件结果:${upload_file_api_response}"
+
+upload_file_api_response=$(curl -s -X POST \
+                            -H "Accept: application/vnd.github+json" \
+                            -H "Authorization: Bearer ${github_token}" \
+                            -H "X-GitHub-Api-Version: 2022-11-28" \
+                            -H "Content-Type: application/octet-stream" \
+                            --data-binary "@./build/dairo-npc-mac-amd64" \
+                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-mac-amd64")
+echo "上传文件结果:${upload_file_api_response}"
+
+upload_file_api_response=$(curl -s -X POST \
+                            -H "Accept: application/vnd.github+json" \
+                            -H "Authorization: Bearer ${github_token}" \
+                            -H "X-GitHub-Api-Version: 2022-11-28" \
+                            -H "Content-Type: application/octet-stream" \
+                            --data-binary "@./build/dairo-npc-mac-arm64" \
+                            "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc-mac-arm64")
 echo "上传文件结果:${upload_file_api_response}"
 
 
 #---------------------------------------上传Docker镜像-----------------------------------------
-mv $exec_file ./document/docker/
+mv ./build/dairo-npc-linux-amd64 ./document/docker/
 cd ./document/docker/
 docker build -t $docker_user/dairo-npc:$version .
 docker login -u $docker_user --password $docker_pwd
