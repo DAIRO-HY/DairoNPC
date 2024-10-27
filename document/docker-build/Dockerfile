@@ -14,10 +14,6 @@ RUN yes|apt-get install libsqlite3-dev
 #安装gcc,编译sqlite需要
 RUN yes|apt-get install gcc
 
-#安装xz解压工具，否则可能导致解压xz失败
-RUN yes|apt-get install xz-utils
-RUN yes|apt-get install unzip
-
 WORKDIR /opt
 
 #下载go

@@ -4,8 +4,8 @@ RUN mkdir /app
 WORKDIR /app
 
 #下载程序
-ADD https://github.com/DAIRO-HY/DairoNPC/releases/download/1.0.0/dairo-npc-linux-amd64 /app
-#ADD dairo-npc-linux-amd64 /app/dairo-npc-linux-amd64
+#ADD https://github.com/DAIRO-HY/DairoNPC/releases/download/1.0.0/dairo-npc-linux-amd64 /app
+COPY dairo-npc-linux-amd64 /app/dairo-npc-linux-amd64
 
 #授权可执行
 RUN chmod +x dairo-npc-linux-amd64
