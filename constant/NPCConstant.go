@@ -1,7 +1,7 @@
 package constant
 
 // 客户端版本号
-const VERSION = "1.0.1"
+const VERSION = "1.0.2"
 
 // 心跳间隔时间(毫秒)
 const HEART_TIME = 3000

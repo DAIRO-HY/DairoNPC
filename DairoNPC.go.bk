@@ -1,0 +1,28 @@
+// 被到处的包名必须和go.mod中的module保持一直，否则无法导出aar
+// 函数注释不能带有中文，否则可能导致到处源代码失败
+package DairoNPC
+
+import (
+	"DairoNPC/DairoNPCMain"
+	"DairoNPC/session"
+	"strings"
+)
+
+// Open npc client
+// Use for library call
+func Open(params string) {
+	var args = strings.Split(params, "\n")
+	DairoNPCMain.Open(args)
+}
+
+// Close npc client
+// Use for library call
+func Close() {
+	session.Close()
+}
+
+// IsRuning Check run state
+// Use for library call
+func IsRuning() bool {
+	return session.IsRuning
+}

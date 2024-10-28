@@ -44,12 +44,18 @@ func Open() {
 // 关闭客户端
 func Close() {
 	isClose = true
+	if npcSession != nil {
+		npcSession.shutdown()
+	}
 }
 
 // 检测心跳
 func checkHeart() {
 	for {
 		if isClose {
+			if npcSession != nil {
+				npcSession.shutdown()
+			}
 			return
 		}
 		if (time.Now().UnixMilli() - lastHeartTime) > CHECK_HEART_TIME { //长时间没有收到心跳，视为掉线
