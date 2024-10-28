@@ -1,15 +1,15 @@
-package main
+package DairoNPCMain
 
 import (
 	"DairoNPC/constant"
 	"DairoNPC/session"
 	"fmt"
-	"os"
 	"strings"
 )
 
-func main() {
-	var args = os.Args
+// 开启客户端
+func Open(args []string) {
+
 	if len(args) < 2 { //测试用
 		args = []string{"-h:127.0.0.1", "-k:njeHds*fs4tfsd", "-t:1781", "-u:1782"}
 	}
