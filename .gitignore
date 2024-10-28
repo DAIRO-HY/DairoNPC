@@ -21,3 +21,5 @@ Cargo.lock
 .idea/
 /document/docker-build/data/
 /build/
+/android/app/libs/dairo-npc.aar
+/android/app/libs/dairo-npc-sources.jar
