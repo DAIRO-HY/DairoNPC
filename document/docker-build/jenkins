@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO = "DAIRO-HY/DairoNPC"
+        BRANCH = "main"
+    }
+    stages {
+        stage("拉取代码") {
+            steps {
+                script{
+                    if(!fileExists("DairoNPC")){
+                        def cloneUrl = "https://${env.GITHUB_TOKEN}@github.com/${env.REPO}.git"
+                        echo "克隆地址:${cloneUrl}"
+                        sh "git clone --branch ${env.BRANCH} ${cloneUrl}"
+                    }
+                }
+                dir("DairoNPC"){
+                    sh "git pull"
+                }
+            }
+        }
+        stage("构建镜像") {
+            steps {
+                dir("DairoNPC/document/docker-build"){
+                    sh "docker build -t dairo-npc-build ."
+                    sh "yes|docker image prune"
+                }
+            }
+        }
+        stage("编译") {
+            steps {
+                sh "docker run -e GITHUB_TOKEN=$GITHUB_TOKEN -e DOCKER_USER=$DOCKER_USER -e DOCKER_PWD=$DOCKER_PASSWORD -v /var/run/docker.sock:/var/run/docker.sock -v /usr/.gradle:/usr/.gradle --rm dairo-npc-build"
+            }
+        }
+    }
+}
