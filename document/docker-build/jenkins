@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         REPO = "DAIRO-HY/DairoNPC"
-        BRANCH = "main"
+        BRANCH = "release"
     }
     stages {
         stage("拉取代码") {

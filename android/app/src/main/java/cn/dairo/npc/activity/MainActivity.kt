@@ -65,8 +65,8 @@ class MainActivity : Activity() {
         }
 
         //测试用
-        this.etHost.setText("172.16.3.91")
-        this.etKey.setText("njeHds*fs4tfsd")
+//        this.etHost.setText("172.16.3.91")
+//        this.etKey.setText("njeHds*fs4tfsd")
     }
 
     /**
