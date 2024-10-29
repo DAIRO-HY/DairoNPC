@@ -77,7 +77,7 @@ sed -i "s/${old_version_string}/${new_version_string}/g" build.gradle.kts
 gradle clean
 gradle assembleRelease
 
-if [ ! -e "./build/outputs/apk/release/app-release-unsigned.apk" ]; then
+if [ ! -e "./build/outputs/apk/release/app-release.apk" ]; then
     echo "编译失败"
     exit 1
 fi

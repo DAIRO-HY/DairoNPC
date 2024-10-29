@@ -4,7 +4,7 @@ plugins {
 }
 
 println("------------------------------------------------")
-println(System.getenv("DAIRO-NPC-JKS-PASSWORD"))
+println(System.getenv("DAIRO_NPC_JKS_PASSWORD"))
 println("------------------------------------------------")
 
 android {

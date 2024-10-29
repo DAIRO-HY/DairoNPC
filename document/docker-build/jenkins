@@ -30,7 +30,7 @@ pipeline {
         }
         stage("编译") {
             steps {
-                sh "docker run -e GITHUB_TOKEN=$GITHUB_TOKEN -e DOCKER_USER=$DOCKER_USER -e DOCKER_PWD=$DOCKER_PASSWORD -v /var/run/docker.sock:/var/run/docker.sock -v /usr/.gradle:/usr/.gradle --rm dairo-npc-build"
+                sh "docker run -e GITHUB_TOKEN=$GITHUB_TOKEN -e DOCKER_USER=$DOCKER_USER -e DOCKER_PWD=$DOCKER_PASSWORD -e DAIRO_NPC_JKS_PASSWORD=$DAIRO_NPC_JKS_PASSWORD -v /var/run/docker.sock:/var/run/docker.sock -v /usr/.gradle:/usr/.gradle --rm dairo-npc-build"
             }
         }
     }
