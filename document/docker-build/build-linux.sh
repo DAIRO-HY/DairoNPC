@@ -172,7 +172,7 @@ upload_file_api_response=$(curl -s -X POST \
                             -H "Authorization: Bearer ${github_token}" \
                             -H "X-GitHub-Api-Version: 2022-11-28" \
                             -H "Content-Type: application/octet-stream" \
-                            --data-binary "@./android/app/build/outputs/apk/release/app-release-unsigned.apk" \
+                            --data-binary "@./android/app/build/outputs/apk/release/app-release.apk" \
                             "https://uploads.github.com/repos/${repo}/releases/${release_id}/assets?name=dairo-npc.apk")
 echo "上传文件dairo-npc.apk结果:${upload_file_api_response}"
 
