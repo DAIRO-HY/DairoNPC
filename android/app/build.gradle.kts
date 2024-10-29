@@ -3,6 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+println("------------------------------------------------")
+println(System.getenv("DAIRO-NPC-JKS-PASSWORD"))
+println("------------------------------------------------")
+
 android {
     namespace = "cn.dairo.npc"
     compileSdk = 34
@@ -18,9 +22,20 @@ android {
             useSupportLibrary = true
         }
     }
+    signingConfigs {
+        create("releaseConfig") {
+            storeFile = File(rootProject.projectDir, "dairo-npc.jks")
+
+            //Ths********1
+            storePassword = System.getenv("DAIRO-NPC-JKS-PASSWORD")
+            keyAlias = "dairo-npc"
+            keyPassword = System.getenv("DAIRO-NPC-JKS-PASSWORD")
+        }
+    }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("releaseConfig")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
