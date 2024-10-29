@@ -23,9 +23,9 @@ android {
             storeFile = File(rootProject.projectDir, "dairo-npc.jks")
 
             //Ths********1
-            storePassword = System.getenv("DAIRO-NPC-JKS-PASSWORD")
+            storePassword = System.getenv("DAIRO_NPC_JKS_PASSWORD")
             keyAlias = "dairo-npc"
-            keyPassword = System.getenv("DAIRO-NPC-JKS-PASSWORD")
+            keyPassword = System.getenv("DAIRO_NPC_JKS_PASSWORD")
         }
     }
 
