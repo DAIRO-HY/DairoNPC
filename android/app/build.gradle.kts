@@ -3,10 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-println("------------------------------------------------")
-println(System.getenv("DAIRO_NPC_JKS_PASSWORD"))
-println("------------------------------------------------")
-
 android {
     namespace = "cn.dairo.npc"
     compileSdk = 34
