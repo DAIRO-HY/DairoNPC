@@ -1,4 +1,4 @@
-package bridge
+package tcp_bridge
 
 import (
 	"DairoNPC/util/SecurityUtil"

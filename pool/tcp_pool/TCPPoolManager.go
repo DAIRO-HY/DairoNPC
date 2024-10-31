@@ -1,4 +1,4 @@
-package pool
+package tcp_pool
 
 import (
 	"DairoNPC/constant"
