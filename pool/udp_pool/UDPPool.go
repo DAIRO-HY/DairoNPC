@@ -12,7 +12,7 @@ import (
  * 等待分配工作的Socket
  */
 type UDPPool struct {
-	socket *net.UDPConn
+	Socket *net.UDPConn
 
 	/**
 	 * 关闭标记
@@ -29,7 +29,7 @@ func (mine *UDPPool) start() {
 
 	//等待分噢诶工作
 	mine.waitWork()
-	UDPPoolManager.removePoolList(this@UDPPool)
+	removePoolList(mine)
 }
 
 /**
@@ -37,7 +37,7 @@ func (mine *UDPPool) start() {
  */
 func (mine *UDPPool) close() {
 	mine.isCloseFlag = true
-	mine.socket.Close()
+	mine.Socket.Close()
 }
 
 /**
@@ -45,7 +45,7 @@ func (mine *UDPPool) close() {
  */
 func (mine *UDPPool) sendClientInfo() {
 	clientId := strconv.Itoa(constant.ClientId)
-	mine.socket.Write([]byte(clientId))
+	mine.Socket.Write([]byte(clientId))
 }
 
 /**
@@ -53,9 +53,9 @@ func (mine *UDPPool) sendClientInfo() {
  */
 func (mine *UDPPool) waitWork() {
 	headBuf := make([]byte, 1024)
-	length, _, err := mine.socket.ReadFromUDP(headBuf)
+	length, _, err := mine.Socket.ReadFromUDP(headBuf)
 	if err != nil {
-		mine.socket.Close()
+		mine.Socket.Close()
 		return
 	}
 	//得到头部信息
@@ -63,7 +63,7 @@ func (mine *UDPPool) waitWork() {
 
 	//关闭链接池标识
 	if head == "CLOSE" { //TODO:
-		mine.socket.Close()
+		mine.Socket.Close()
 		return
 	}
 
@@ -87,5 +87,5 @@ func (mine *UDPPool) waitWork() {
 	//println("-->:${hearder}")
 	//this.socket.close()
 	//return
-	udp_bridge.Start(isEncodeData, targetAddr, mine.socket)
+	udp_bridge.Start(isEncodeData, targetAddr, mine.Socket)
 }

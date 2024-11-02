@@ -4,7 +4,8 @@ import (
 	"DairoNPC/HeaderUtil"
 	"DairoNPC/constant"
 	"DairoNPC/extension"
-	"DairoNPC/pool"
+	"DairoNPC/pool/tcp_pool"
+	"DairoNPC/pool/udp_pool"
 	"DairoNPC/util/SecurityUtil"
 	"DairoNPC/util/TcpUtil"
 	"net"
@@ -110,30 +111,30 @@ func (mine *NPCSession) receive() {
 		switch flag {
 
 		//服务器向客户端申请TCP连接池请求
-		case HeaderUtil.SERVER_TCP_POOL_REQUEST:
-			{
-				header, err := HeaderUtil.GetHeader(mine.npcTCP)
-				if err != nil {
-					return
-				}
-
-				//创建数量
-				count, _ := strconv.ParseInt(header, 10, 64)
-
-				//创建连接池
-				pool.Create(int(count))
+		case HeaderUtil.REQUEST_TCP_POOL:
+			header, err := HeaderUtil.GetHeader(mine.npcTCP)
+			if err != nil {
+				return
 			}
 
-		////服务器向客户端申请UDP连接池请求
-		//case HeaderUtil.SERVER_UDP_POOL_REQUEST: {
-		//    header := HeaderUtil.getHeader(this.npcTCP) ?: continue
-		//
-		//    //创建数量
-		//    val count = header.toInt()
-		//
-		//    //创建连接池
-		//    UDPPoolManager.create(count)
-		//}
+			//创建数量
+			count, _ := strconv.ParseInt(header, 10, 64)
+
+			//创建连接池
+			tcp_pool.Create(int(count))
+
+		//服务器向客户端申请UDP连接池请求
+		case HeaderUtil.REQUEST_UDP_POOL:
+			header, err := HeaderUtil.GetHeader(mine.npcTCP)
+			if err != nil {
+				return
+			}
+
+			//创建数量
+			count, _ := strconv.ParseInt(header, 10, 64)
+
+			//创建连接池
+			udp_pool.Create(int(count))
 
 		//服务器端回复了心跳
 		case HeaderUtil.MAIN_HEART_BEAT:

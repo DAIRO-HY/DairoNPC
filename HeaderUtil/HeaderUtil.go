@@ -15,12 +15,12 @@ const MAIN_HEART_BEAT = 1
 const SERVER_TO_CLIENT_ID = 2
 
 // 向客户端申请TCP连接池请求
-const SERVER_TCP_POOL_REQUEST = 3
+const REQUEST_TCP_POOL = 3
 
 /**
  * 向客户端申请UDP连接池请求
  */
-const SERVER_UDP_POOL_REQUEST = 4
+const REQUEST_UDP_POOL = 4
 
 /**
  * 服务器向客户端同步当前处于激活状态的UDP连接池端口

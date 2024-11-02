@@ -33,7 +33,7 @@ func (mine *TCPPool) start() {
 func (mine *TCPPool) sendClientInfoToServer() {
 
 	//标记这是一个连接池  并且将客户端ID告诉服务器
-	err := HeaderUtil.SendFlag(mine.npcTCP, HeaderUtil.SERVER_TCP_POOL_REQUEST, strconv.Itoa(constant.ClientId))
+	err := HeaderUtil.SendFlag(mine.npcTCP, HeaderUtil.REQUEST_TCP_POOL, strconv.Itoa(constant.ClientId))
 	if err != nil {
 		mine.npcTCP.Close()
 	}
