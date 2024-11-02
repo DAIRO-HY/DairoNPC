@@ -3,6 +3,7 @@ package udp_pool
 import (
 	"DairoNPC/bridge/udp_bridge"
 	"DairoNPC/constant"
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -12,12 +13,7 @@ import (
  * 等待分配工作的Socket
  */
 type UDPPool struct {
-	Socket *net.UDPConn
-
-	/**
-	 * 关闭标记
-	 */
-	isCloseFlag bool
+	NpsUDP *net.UDPConn
 }
 
 /**
@@ -36,8 +32,7 @@ func (mine *UDPPool) start() {
  * 关闭连接
  */
 func (mine *UDPPool) close() {
-	mine.isCloseFlag = true
-	mine.Socket.Close()
+	mine.NpsUDP.Close()
 }
 
 /**
@@ -45,7 +40,7 @@ func (mine *UDPPool) close() {
  */
 func (mine *UDPPool) sendClientInfo() {
 	clientId := strconv.Itoa(constant.ClientId)
-	mine.Socket.Write([]byte(clientId))
+	mine.NpsUDP.Write([]byte(clientId))
 }
 
 /**
@@ -53,22 +48,27 @@ func (mine *UDPPool) sendClientInfo() {
  */
 func (mine *UDPPool) waitWork() {
 	headBuf := make([]byte, 1024)
-	length, _, err := mine.Socket.ReadFromUDP(headBuf)
+	length, _, err := mine.NpsUDP.ReadFromUDP(headBuf)
 	if err != nil {
-		mine.Socket.Close()
+		mine.NpsUDP.Close()
 		return
 	}
 	//得到头部信息
-	head := string(headBuf[length])
+	head := string(headBuf[:length])
 
 	//关闭链接池标识
-	if head == "CLOSE" { //TODO:
-		mine.Socket.Close()
+	if head == "CLOSE" {
+		fmt.Println("接收到关闭连接指令")
+		mine.NpsUDP.Close()
 		return
 	}
 
 	//头部信息数组
 	headArr := strings.Split(head, "|")
+	if len(headArr) < 2 { //这不是一个我们想要的信息
+		mine.NpsUDP.Close()
+		return
+	}
 
 	//加密类型及目标端口 格式:加密状态|端口  1|80   1|127.0.0.1:80
 	//1:加密  0:不加密
@@ -87,5 +87,5 @@ func (mine *UDPPool) waitWork() {
 	//println("-->:${hearder}")
 	//this.socket.close()
 	//return
-	udp_bridge.Start(isEncodeData, targetAddr, mine.Socket)
+	udp_bridge.Start(isEncodeData, targetAddr, mine.NpsUDP)
 }

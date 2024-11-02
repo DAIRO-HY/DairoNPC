@@ -1,9 +1,11 @@
 package session
 
 import (
-	"DairoNPC/bridge"
+	"DairoNPC/bridge/tcp_bridge"
+	"DairoNPC/bridge/udp_bridge"
 	"DairoNPC/constant"
-	"DairoNPC/pool"
+	"DairoNPC/pool/tcp_pool"
+	"DairoNPC/pool/udp_pool"
 	"fmt"
 	"net"
 	"sync"
@@ -36,12 +38,14 @@ func Open() {
 	lock.Lock()
 	isClose = false
 	IsRuning = true
+	fmt.Println("NPC服务开启成功")
 	checkHeart()
 	IsRuning = false
 	lock.Unlock()
 }
 
 // 关闭客户端
+// 公开给外部程序调用
 func Close() {
 	isClose = true
 	if npcSession != nil {
@@ -70,8 +74,11 @@ func checkHeart() {
 			//println("-->当前连接数:${TCPBriageManager.mBridgeList.count() + UDPBriageManager.mBridgeList.count()}/${(UDPPoolManager.mPoolList.count() + TCPPoolManager.mTcpPoolList.count())}")
 
 			//关闭所有链接
-			bridge.ShutdownAll()
-			pool.ShutdownAll()
+			tcp_bridge.ShutdownAll()
+			udp_bridge.ShutdownAll()
+
+			tcp_pool.ShutdownAll()
+			udp_pool.ShutdownAll()
 			createConnection()
 		}
 		time.Sleep(CHECK_HEART_TIME * time.Millisecond)
@@ -80,6 +87,7 @@ func checkHeart() {
 
 // 创建连接
 func createConnection() {
+	fmt.Printf("createConnection:当前UDP连接池:%d UDP桥接数:%d \n", udp_pool.Count(), udp_bridge.Count())
 
 	// 与服务端建立连接
 	tcp, err := net.Dial("tcp", constant.Host+":"+constant.TcpPort)
@@ -88,8 +96,7 @@ func createConnection() {
 		return
 	}
 	npcSession = &NPCSession{
-		npcTCP: tcp,
+		npsTCP: tcp,
 	}
 	go npcSession.start()
-	fmt.Println("-->服务开启成功")
 }

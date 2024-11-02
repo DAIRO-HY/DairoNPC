@@ -20,7 +20,7 @@ func Create(count int) {
 			return
 		}
 		pool := &TCPPool{
-			npcTCP: tcp,
+			npsTCP: tcp,
 		}
 		lock.Lock()
 		mTcpPoolList[pool] = true
@@ -49,7 +49,7 @@ func ShutdownAll() {
 	//关闭操作需要通知服务端，可能会造成阻塞，所以最好新开一个协程单独处理
 	go func() {
 		for _, pool := range closeList {
-			pool.npcTCP.Close()
+			pool.npsTCP.Close()
 		}
 	}()
 }

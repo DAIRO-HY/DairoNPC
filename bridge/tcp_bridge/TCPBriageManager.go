@@ -13,7 +13,7 @@ var lock sync.Mutex
 func Start(isEncodeData bool, targetAddr string, npcTCP net.Conn) {
 	bridge := &TCPBridge{
 		isEncodeData: isEncodeData,
-		NpcTCP:       npcTCP,
+		NpsTCP:       npcTCP,
 	}
 	lock.Lock()
 	bridgeMap[bridge] = true

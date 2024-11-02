@@ -2,12 +2,14 @@ package session
 
 import (
 	"DairoNPC/HeaderUtil"
+	"DairoNPC/bridge/udp_bridge"
 	"DairoNPC/constant"
 	"DairoNPC/extension"
 	"DairoNPC/pool/tcp_pool"
 	"DairoNPC/pool/udp_pool"
 	"DairoNPC/util/SecurityUtil"
 	"DairoNPC/util/TcpUtil"
+	"fmt"
 	"net"
 	"strconv"
 	"time"
@@ -15,7 +17,7 @@ import (
 
 // 与服务端通信连接
 type NPCSession struct {
-	npcTCP net.Conn
+	npsTCP net.Conn
 }
 
 /**
@@ -25,7 +27,7 @@ func (mine *NPCSession) start() {
 	mine.readServerInfoAndReceive()
 
 	//关闭会话
-	mine.npcTCP.Close()
+	mine.npsTCP.Close()
 }
 
 // 从服务端读取基本信息
@@ -33,7 +35,7 @@ func (mine *NPCSession) readServerInfoAndReceive() {
 	header := constant.Key + "|" + constant.VERSION
 
 	//发送标记信息
-	if HeaderUtil.SendFlag(mine.npcTCP, HeaderUtil.CLIENT_TO_SERVER_MAIN_CONNECTION, header) != nil {
+	if HeaderUtil.SendFlag(mine.npsTCP, HeaderUtil.CLIENT_TO_SERVER_MAIN_CONNECTION, header) != nil {
 		return
 	}
 
@@ -60,19 +62,19 @@ func (mine *NPCSession) readServerInfoAndReceive() {
 func (mine *NPCSession) readClientId() error {
 
 	//第一个字节为标记
-	flagData, err := TcpUtil.ReadNByte(mine.npcTCP, 1)
+	flagData, err := TcpUtil.ReadNByte(mine.npsTCP, 1)
 	if err != nil {
 		return err
 	}
 	if flagData[0] != HeaderUtil.SERVER_TO_CLIENT_ID {
-		mine.npcTCP.Close()
+		mine.npsTCP.Close()
 		return &extension.BusinessException{
 			Message: "非法标记:$flag",
 		}
 	}
 
 	//得到头部数据
-	header, err := HeaderUtil.GetHeader(mine.npcTCP)
+	header, err := HeaderUtil.GetHeader(mine.npsTCP)
 	if err != nil {
 		return err
 	}
@@ -87,7 +89,7 @@ func (mine *NPCSession) readClientId() error {
 
 // 客户端加解密秘钥
 func (mine *NPCSession) readClientSecurityKey() error {
-	clientSecurityKey, err := TcpUtil.ReadNByte(mine.npcTCP, 256)
+	clientSecurityKey, err := TcpUtil.ReadNByte(mine.npsTCP, 256)
 	if err != nil {
 		return err
 	}
@@ -102,7 +104,7 @@ func (mine *NPCSession) readClientSecurityKey() error {
  */
 func (mine *NPCSession) receive() {
 	for {
-		flagData, err := TcpUtil.ReadNByte(mine.npcTCP, 1)
+		flagData, err := TcpUtil.ReadNByte(mine.npsTCP, 1)
 		if err != nil {
 			return
 		}
@@ -112,7 +114,7 @@ func (mine *NPCSession) receive() {
 
 		//服务器向客户端申请TCP连接池请求
 		case HeaderUtil.REQUEST_TCP_POOL:
-			header, err := HeaderUtil.GetHeader(mine.npcTCP)
+			header, err := HeaderUtil.GetHeader(mine.npsTCP)
 			if err != nil {
 				return
 			}
@@ -125,7 +127,7 @@ func (mine *NPCSession) receive() {
 
 		//服务器向客户端申请UDP连接池请求
 		case HeaderUtil.REQUEST_UDP_POOL:
-			header, err := HeaderUtil.GetHeader(mine.npcTCP)
+			header, err := HeaderUtil.GetHeader(mine.npsTCP)
 			if err != nil {
 				return
 			}
@@ -139,6 +141,7 @@ func (mine *NPCSession) receive() {
 		//服务器端回复了心跳
 		case HeaderUtil.MAIN_HEART_BEAT:
 			//println("-->收到服务器心跳数据:${System.currentTimeMillis()}")
+			fmt.Printf("当前UDP连接池:%d UDP桥接数:%d \n", udp_pool.Count(), udp_bridge.Count())
 			lastHeartTime = time.Now().UnixMilli()
 
 			////服务器向客户端同步当前处于激活状态的UDP连接池端口
@@ -160,7 +163,7 @@ func (mine *NPCSession) receive() {
 func (mine *NPCSession) heart() {
 	for { //每个一段时间发送一次心跳包
 		time.Sleep(constant.HEART_TIME * time.Millisecond)
-		err := HeaderUtil.SendFlag(mine.npcTCP, HeaderUtil.MAIN_HEART_BEAT, "")
+		err := HeaderUtil.SendFlag(mine.npsTCP, HeaderUtil.MAIN_HEART_BEAT, "")
 		if err != nil {
 			break
 		}
@@ -190,5 +193,5 @@ func (mine *NPCSession) heart() {
  * 关闭服务
  */
 func (mine *NPCSession) shutdown() {
-	mine.npcTCP.Close()
+	mine.npsTCP.Close()
 }

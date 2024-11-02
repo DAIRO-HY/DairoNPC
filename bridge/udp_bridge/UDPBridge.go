@@ -2,33 +2,22 @@ package udp_bridge
 
 import (
 	"DairoNPC/util/SecurityUtil"
-	"fmt"
 	"net"
-	"sync"
 )
 
 /**
  * UDP桥接
  */
 type UDPBridge struct {
-	isEncodeData  bool
-	targetAddr    string
-	mClientSocket *net.UDPConn
-
-	mTargetSocket *net.UDPConn
-
-	/**
-	 * 关闭标识
-	 */
-	isCloseFlag bool
+	isEncodeData bool //是否加密传输
+	npsUdp       *net.UDPConn
+	targetUDP    *net.UDPConn
 
 	//标记从目标端口读取数据结束
 	isTargetReadFinish bool
 
 	//标记从服务端口读取数据结束
 	isNpsReadFinish bool
-
-	mCloseCheckLock sync.Mutex
 }
 
 /**
@@ -67,21 +56,6 @@ func mTargetSocket() {
  * 开始传输数据
  */
 func (mine *UDPBridge) start() {
-
-	// 创建一个 UDP 地址
-	serverAddr, err := net.ResolveUDPAddr("udp", mine.targetAddr)
-	if err != nil {
-		fmt.Println("Error resolving address:", err)
-		return
-	}
-
-	// 创建一个 UDP 连接
-	mine.mTargetSocket, err = net.DialUDP("udp", nil, serverAddr)
-	if err != nil {
-		fmt.Println("Error resolving address:", err)
-		return
-	}
-
 	go mine.receiveByCLSServerSendToTarget()
 	mine.receiveByTargetSendToCLSServer()
 }
@@ -96,7 +70,7 @@ func (mine *UDPBridge) receiveByCLSServerSendToTarget() {
 	for {
 
 		//从NPS服务器端接收数据
-		length, _, err := mine.mClientSocket.ReadFromUDP(data)
+		length, _, err := mine.npsUdp.ReadFromUDP(data)
 		if err != nil { //服务器端关闭了
 			break
 		}
@@ -107,7 +81,7 @@ func (mine *UDPBridge) receiveByCLSServerSendToTarget() {
 		}
 
 		//从服务端收到数据原样发送给目标服务器
-		sendLen, err := mine.mTargetSocket.Write(data[:length])
+		sendLen, err := mine.targetUDP.Write(data[:length])
 		if err != nil { //目标端口可能已经关闭
 			break
 		}
@@ -129,7 +103,7 @@ func (mine *UDPBridge) receiveByTargetSendToCLSServer() {
 	for {
 
 		//从目标端口接收数据
-		length, _, err := mine.mTargetSocket.ReadFromUDP(data)
+		length, _, err := mine.targetUDP.ReadFromUDP(data)
 		if err != nil { //目标端口关闭了
 			break
 		}
@@ -140,7 +114,7 @@ func (mine *UDPBridge) receiveByTargetSendToCLSServer() {
 		}
 
 		//从目标端口收到数据原样发送给NPS服务器
-		sendLen, err := mine.mClientSocket.Write(data[:length])
+		sendLen, err := mine.npsUdp.Write(data[:length])
 		if err != nil { //服务端可能已经关闭
 			break
 		}
@@ -157,9 +131,9 @@ func (mine *UDPBridge) receiveByTargetSendToCLSServer() {
  */
 func (mine *UDPBridge) checkClose() {
 	if mine.isTargetReadFinish && mine.isNpsReadFinish {
-		mine.isCloseFlag = true
-		mine.mClientSocket.Close()
-		mine.mTargetSocket.Close()
+		mine.npsUdp.Close()
+		mine.targetUDP.Close()
+		removeBridgeList(mine)
 	}
 }
 
@@ -167,7 +141,6 @@ func (mine *UDPBridge) checkClose() {
  * 关闭资源
  */
 func (mine *UDPBridge) close() {
-	mine.isCloseFlag = true
-	mine.mClientSocket.Close()
-	mine.mTargetSocket.Close()
+	mine.npsUdp.Close()
+	mine.targetUDP.Close()
 }

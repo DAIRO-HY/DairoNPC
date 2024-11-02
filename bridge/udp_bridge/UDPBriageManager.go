@@ -1,6 +1,7 @@
 package udp_bridge
 
 import (
+	"fmt"
 	"net"
 	"sync"
 )
@@ -10,32 +11,47 @@ import (
 /**
  * 当前桥接列表
  */
-var mBridgeList = map[*UDPBridge]bool{}
-var mBridgeListLock sync.Mutex
+var bridgeMap = map[*UDPBridge]bool{}
+var bridgeLock sync.Mutex
+
+func Count() int {
+	return len(bridgeMap)
+}
 
 // 开始UDP桥接
 func Start(isEncodeData bool, targetAddr string, clientSocket *net.UDPConn) {
-	bridge := &UDPBridge{
-		isEncodeData:  isEncodeData,
-		targetAddr:    targetAddr,
-		mClientSocket: clientSocket,
+
+	// 创建一个 UDP 地址
+	targetUDPAddr, _ := net.ResolveUDPAddr("udp", targetAddr)
+
+	// 创建一个 UDP 连接
+	targetUDP, err := net.DialUDP("udp", nil, targetUDPAddr)
+	if err != nil { //目标服务器端口可能没有启动
+		//@TODO: 这里应该通知服务器端关闭桥接,否则服务端收不到通知会一直保持连接
+		fmt.Println("Error resolving address:", err)
+		return
 	}
-	mBridgeListLock.Lock()
-	mBridgeList[bridge] = true
-	mBridgeListLock.Unlock()
+	bridge := &UDPBridge{
+		isEncodeData: isEncodeData,
+		targetUDP:    targetUDP,
+		npsUdp:       clientSocket,
+	}
+	bridgeLock.Lock()
+	bridgeMap[bridge] = true
+	bridgeLock.Unlock()
 	go bridge.start()
 }
 
 // 从桥接列表移除
 func removeBridgeList(bridge *UDPBridge) {
-	mBridgeListLock.Lock()
-	delete(mBridgeList, bridge)
-	mBridgeListLock.Unlock()
+	bridgeLock.Lock()
+	delete(bridgeMap, bridge)
+	bridgeLock.Unlock()
 }
 
 // 清空连接
-func closeAll() {
-	for bridge, _ := range mBridgeList { //@TODO: 这里调用close之后会不会执行removeBridgeList,待测试
+func ShutdownAll() {
+	for bridge, _ := range bridgeMap { //@TODO: 这里调用close之后会不会执行removeBridgeList,待测试
 		bridge.close()
 	}
 }
@@ -57,7 +73,7 @@ func closeAll() {
 //
 //            //筛选出非活性的连接
 //            this@UDPBriageManager.mBridgeList.filter {
-//                !serverActivePortList.contains(it.mClientSocket.localPort)
+//                !serverActivePortList.contains(it.npsUdp.localPort)
 //            }
 //        }
 //    }

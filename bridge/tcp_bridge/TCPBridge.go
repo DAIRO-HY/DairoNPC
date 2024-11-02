@@ -12,7 +12,7 @@ type TCPBridge struct {
 	isEncodeData bool
 
 	//NPC客户端的TCP
-	NpcTCP net.Conn
+	NpsTCP net.Conn
 
 	//目标服务器连接
 	TargetTCP net.Conn
@@ -33,7 +33,7 @@ func (mine *TCPBridge) start(targetAddr string) { // 连接到服务器
 	//与目标端口建立连接
 	tcp, err := net.Dial("tcp", targetAddr)
 	if err != nil {
-		mine.NpcTCP.Close()
+		mine.NpsTCP.Close()
 		return
 	}
 	mine.TargetTCP = tcp
@@ -45,7 +45,7 @@ func (mine *TCPBridge) start(targetAddr string) { // 连接到服务器
 func (mine *TCPBridge) receiveByNpsSendToTarget() {
 	data := make([]uint8, READ_CACHE_SIZE)
 	for {
-		length, err := mine.NpcTCP.Read(data)
+		length, err := mine.NpsTCP.Read(data)
 		if err != nil {
 			break
 		}
@@ -63,7 +63,7 @@ func (mine *TCPBridge) receiveByNpsSendToTarget() {
 	}
 
 	//关闭代理端的读操作
-	mine.NpcTCP.(*net.TCPConn).CloseRead()
+	mine.NpsTCP.(*net.TCPConn).CloseRead()
 
 	//关闭目标端的写操作
 	mine.TargetTCP.(*net.TCPConn).CloseWrite()
@@ -88,7 +88,7 @@ func (mine *TCPBridge) receiveByTargetSendToNps() {
 		}
 
 		//往NPS服务器发送数据
-		err = TcpUtil.WriteAll(mine.NpcTCP, data[:length])
+		err = TcpUtil.WriteAll(mine.NpsTCP, data[:length])
 		if err != nil {
 			break
 		}
@@ -98,7 +98,7 @@ func (mine *TCPBridge) receiveByTargetSendToNps() {
 	mine.TargetTCP.(*net.TCPConn).CloseRead()
 
 	//关闭NPS服务端的写操作
-	mine.NpcTCP.(*net.TCPConn).CloseWrite()
+	mine.NpsTCP.(*net.TCPConn).CloseWrite()
 
 	//标记目标端读操作已经关闭
 	mine.isTargetReadClosed = true
@@ -108,7 +108,7 @@ func (mine *TCPBridge) receiveByTargetSendToNps() {
 // 回收连接
 func (mine *TCPBridge) recycle() {
 	if mine.isNpcReadClosed && mine.isTargetReadClosed {
-		mine.NpcTCP.Close()
+		mine.NpsTCP.Close()
 		mine.TargetTCP.Close()
 		removeBridge(mine)
 	}
@@ -116,6 +116,6 @@ func (mine *TCPBridge) recycle() {
 
 // 关闭链接
 func (mine *TCPBridge) shutdown() {
-	mine.NpcTCP.Close()
+	mine.NpsTCP.Close()
 	mine.TargetTCP.Close()
 }

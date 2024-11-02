@@ -15,6 +15,10 @@ import (
 var mPoolList = make(map[*UDPPool]bool)
 var mPoolListLock sync.Mutex
 
+func Count() int {
+	return len(mPoolList)
+}
+
 /**
  * 创建UDP连接池
  */
@@ -37,7 +41,7 @@ func Create(count int) {
 			return
 		}
 		pool := &UDPPool{
-			Socket: udp,
+			NpsUDP: udp,
 		}
 		mPoolList[pool] = true
 		go pool.start()
@@ -45,21 +49,19 @@ func Create(count int) {
 	mPoolListLock.Unlock()
 }
 
-/**
- * 连接池列表移除
- */
+// 连接池列表移除
 func removePoolList(pool *UDPPool) {
 	mPoolListLock.Lock()
 	delete(mPoolList, pool)
 	mPoolListLock.Unlock()
 }
 
-/**
- * 关闭连接池所有链接
- */
-func closeAll() {
+// 关闭连接池所有链接
+func ShutdownAll() {
 	mPoolListLock.Lock()
 	for pool, _ := range mPoolList {
+
+		//关闭后,UDPPool内部会自动调用removePoolList,这里无需手动调用
 		pool.close()
 	}
 	mPoolListLock.Unlock()
