@@ -55,29 +55,3 @@ func ShutdownAll() {
 		bridge.close()
 	}
 }
-
-/**
- * 服务器向客户端同步当前处于激活状态的UDP连接端口
- */
-//func syncServerActivePort(ports: String) = GlobalScope.launch(CLCDispatchers.IO) {
-//    val serverActivePortList = HashSet(ports.split(",").map { it.toInt() })
-//    var closeList: List<UDPBridge>? = null
-//    this@UDPBriageManager.mBridgeListLock.withLock {
-//
-//        //筛选出需要关闭的连接池
-//        closeList = if (ports == "0") {
-//
-//            //全部关闭
-//            this@UDPBriageManager.mBridgeList.filter { true }
-//        } else {
-//
-//            //筛选出非活性的连接
-//            this@UDPBriageManager.mBridgeList.filter {
-//                !serverActivePortList.contains(it.npsUdp.localPort)
-//            }
-//        }
-//    }
-//    closeList!!.forEach {
-//        it.close()
-//    }
-//}

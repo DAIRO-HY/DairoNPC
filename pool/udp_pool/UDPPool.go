@@ -3,7 +3,6 @@ package udp_pool
 import (
 	"DairoNPC/bridge/udp_bridge"
 	"DairoNPC/constant"
-	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -57,8 +56,7 @@ func (mine *UDPPool) waitWork() {
 	head := string(headBuf[:length])
 
 	//关闭链接池标识
-	if head == "CLOSE" {
-		fmt.Println("接收到关闭连接指令")
+	if head == constant.UDP_POOL_CLOSE_FLAG {
 		mine.NpsUDP.Close()
 		return
 	}
@@ -73,7 +71,7 @@ func (mine *UDPPool) waitWork() {
 	//加密类型及目标端口 格式:加密状态|端口  1|80   1|127.0.0.1:80
 	//1:加密  0:不加密
 
-	//加密状态  1:加密  0:不加密
+	//加密状态
 	isEncodeData := headArr[0] == "1"
 
 	//目标服务器信息

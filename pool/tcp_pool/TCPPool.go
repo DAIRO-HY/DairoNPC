@@ -46,21 +46,21 @@ func (mine *TCPPool) waitWork() {
 
 	//加密类型及目标端口 格式:加密状态|端口  1|80   1|127.0.0.1:80
 	//1:加密  0:不加密
-	hearder, err := HeaderUtil.GetHeader(mine.npsTCP)
+	head, err := HeaderUtil.GetHeader(mine.npsTCP)
 	if err != nil { //服务器端连接达到上限或者连接池被强制关闭
 		mine.npsTCP.Close()
 		return
 	}
 
-	hearders := strings.Split(hearder, "|")
+	headArr := strings.Split(head, "|")
 
 	//加密状态  1:加密  0:不加密
-	securityState := hearders[0]
+	isEncodeData := headArr[0] == "1"
 
 	//目标服务器信息
-	targetAddr := hearders[1]
+	targetAddr := headArr[1]
 	if !strings.Contains(targetAddr, ":") { //如果包含了ip地址
 		targetAddr = "127.0.0.1:" + targetAddr
 	}
-	tcp_bridge.Start(securityState == "1", targetAddr, mine.npsTCP)
+	tcp_bridge.Start(isEncodeData, targetAddr, mine.npsTCP)
 }

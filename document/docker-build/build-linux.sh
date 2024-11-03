@@ -66,7 +66,7 @@ echo "正在编译APK..."
 mv main.go main.go.bk
 mv DairoNPC.go.bk DairoNPC.go
 
-#编译aar
+#编译aar  编译依赖NDK
 gomobile bind "-target=android/amd64,android/arm64,android/arm" -androidapi 21 -o ./android/app/libs/dairo-npc.aar DairoNPC
 cd ./android/app
 old_version_string="versionName = \"1.0\""

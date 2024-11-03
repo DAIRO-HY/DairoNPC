@@ -1,6 +1,7 @@
 package udp_bridge
 
 import (
+	"DairoNPC/constant"
 	"DairoNPC/util/SecurityUtil"
 	"net"
 )
@@ -11,6 +12,7 @@ import (
 type UDPBridge struct {
 	isEncodeData bool //是否加密传输
 	npsUdp       *net.UDPConn
+	npcLocalAddr *net.UDPAddr //本地端口
 	targetUDP    *net.UDPConn
 
 	//标记从目标端口读取数据结束
@@ -19,38 +21,6 @@ type UDPBridge struct {
 	//标记从服务端口读取数据结束
 	isNpsReadFinish bool
 }
-
-/**
- * UDP会话
- */
-func mTargetSocket() {
-	//var ex: Exception? = null
-	//repeat(100) {
-	//    try {
-	//
-	//        //因为端口是随机占用,所以这里有端口被占用的可能
-	//        return@lazy DatagramSocket()
-	//    } catch (e: BindException) {
-	//        ex = e
-	//    }
-	//}
-	//println("-->创建UDP失败")
-	//throw RuntimeException(ex)
-}
-
-/**
- * 目标端IP地址
- */
-//private val mTargetInetAddress: InetAddress by lazy {
-//    InetManager.get(this.targetIp)
-//}
-
-/**
- * 服务器端IP地址
- */
-//private val mClsInetAddress: InetAddress by lazy {
-//    InetManager.get(CLClient.host)
-//}
 
 /**
  * 开始传输数据
@@ -72,6 +42,10 @@ func (mine *UDPBridge) receiveByCLSServerSendToTarget() {
 		//从NPS服务器端接收数据
 		length, _, err := mine.npsUdp.ReadFromUDP(data)
 		if err != nil { //服务器端关闭了
+			break
+		}
+		if length == 19 && data[0] == 58 && string(data[:length]) == constant.UDP_BRIDIGE_CLOSE_FLAG { //很明显,这是一个关闭指令
+			mine.close()
 			break
 		}
 

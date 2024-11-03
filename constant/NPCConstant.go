@@ -1,10 +1,16 @@
 package constant
 
 // 客户端版本号
-const VERSION = "1.0.2"
+const VERSION = "1.1.0"
 
 // 心跳间隔时间(毫秒)
 const HEART_TIME = 3000
+
+// 关闭UDP连接池标记
+const UDP_POOL_CLOSE_FLAG = ":[NPS-POOL-CLOSE]"
+
+// 关闭UDP桥接标记
+const UDP_BRIDIGE_CLOSE_FLAG = ":[NPS-BRIDGE-CLOSE]"
 
 // 服务器
 var Host string

@@ -87,7 +87,7 @@ func checkHeart() {
 
 // 创建连接
 func createConnection() {
-	fmt.Printf("createConnection:当前UDP连接池:%d UDP桥接数:%d \n", udp_pool.Count(), udp_bridge.Count())
+	//fmt.Printf("createConnection:当前UDP连接池:%d UDP桥接数:%d \n", udp_pool.Count(), udp_bridge.Count())
 
 	// 与服务端建立连接
 	tcp, err := net.Dial("tcp", constant.Host+":"+constant.TcpPort)

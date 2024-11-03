@@ -2,7 +2,6 @@ package session
 
 import (
 	"DairoNPC/HeaderUtil"
-	"DairoNPC/bridge/udp_bridge"
 	"DairoNPC/constant"
 	"DairoNPC/extension"
 	"DairoNPC/pool/tcp_pool"
@@ -141,20 +140,24 @@ func (mine *NPCSession) receive() {
 		//服务器端回复了心跳
 		case HeaderUtil.MAIN_HEART_BEAT:
 			//println("-->收到服务器心跳数据:${System.currentTimeMillis()}")
-			fmt.Printf("当前UDP连接池:%d UDP桥接数:%d \n", udp_pool.Count(), udp_bridge.Count())
+			//fmt.Printf("当前UDP连接池:%d UDP桥接数:%d \n", udp_pool.Count(), udp_bridge.Count())
 			lastHeartTime = time.Now().UnixMilli()
 
-			////服务器向客户端同步当前处于激活状态的UDP连接池端口
-			//case HeaderUtil.SYNC_ACTIVE_POOL_UDP_PORT : {
-			//    val ports = HeaderUtil.getHeader(this.npcTCP) ?: continue
-			//    UDPPoolManager.syncServerActivePort(ports)
-			//}
-			//
-			////向客户端同步当前处于激活状态的UDP连接端口
-			//HeaderUtil.SYNC_ACTIVE_BRIDGE_UDP_PORT -> {
-			//    val ports = HeaderUtil.getHeader(this.npcTCP) ?: continue
-			//    UDPBriageManager.syncServerActivePort(ports)
-			//}
+		////服务器向客户端同步当前处于激活状态的UDP连接池端口
+		//case HeaderUtil.SYNC_ACTIVE_POOL_UDP_PORT : {
+		//    val ports = HeaderUtil.getHeader(this.npcTCP) ?: continue
+		//    UDPPoolManager.syncServerActivePort(ports)
+		//}
+		//
+		//向客户端同步当前保留的UDP连接端口
+		case HeaderUtil.SYNC_ACTIVE_BRIDGE_UDP_PORT:
+			ports, err := HeaderUtil.GetHeader(mine.npsTCP)
+			if err != nil {
+				return
+			}
+			fmt.Println(ports)
+			//UDPBriageManager.syncServerActivePort(ports)
+
 		}
 	}
 }
