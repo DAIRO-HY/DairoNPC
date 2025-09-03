@@ -1,7 +1,5 @@
 FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt update
 
 # 解决https更证书的问题
