@@ -16,6 +16,12 @@ pipeline {
                     }
                 }
                 dir("DairoNPC"){
+
+                    //撤销所有修改
+                    sh "git reset --hard HEAD"
+
+                    //删除所有未被跟踪的文件和目录
+                    sh "git clean -fd"
                     sh "git pull"
                 }
             }
@@ -23,7 +29,10 @@ pipeline {
         stage("构建镜像") {
             steps {
                 dir("DairoNPC/document/docker-build"){
-                    sh "docker build -t dairo-npc-build ."
+
+                    //--no-cache：忽略缓存，解决一些莫名其妙的问题
+                    //--network=host：强制使用主机网络。当在容器中构建镜像时（如：jenkins容器中构建镜像），否则可能会导致网络连接失败而无法通过Dockerfile构建镜像
+                    sh "docker build --no-cache --network=host -t dairo-npc-build ."
                     sh "yes|docker image prune"
                 }
             }
