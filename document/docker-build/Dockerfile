@@ -3,8 +3,7 @@ FROM ubuntu:24.10
 RUN apt update
 USER root
 
-#安装xz解压工具，否则可能导致解压xz失败
-RUN yes|apt-get install xz-utils
+#安装zip解压工具
 RUN yes|apt-get install unzip
 
 #安装curl
