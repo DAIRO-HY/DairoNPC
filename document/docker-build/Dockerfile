@@ -2,11 +2,11 @@ FROM ubuntu:24.10
 
 RUN apt update
 
-#安装zip解压工具
-RUN yes|apt-get install unzip
-
 #安装curl
 RUN yes|apt install curl
+
+#安装zip解压工具
+RUN yes|apt-get install unzip
 
 #安装git
 RUN yes|apt install git
