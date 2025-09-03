@@ -45,19 +45,21 @@ func (mine *TCPBridge) start(targetAddr string) { // 连接到服务器
 func (mine *TCPBridge) receiveByNpsSendToTarget() {
 	data := make([]uint8, READ_CACHE_SIZE)
 	for {
-		length, err := mine.NpsTCP.Read(data)
-		if err != nil {
-			break
-		}
+		n, readErr := mine.NpsTCP.Read(data)
+		if n > 0 {
 
-		//数据解密
-		if mine.isEncodeData {
-			SecurityUtil.Mapping(data, length)
-		}
+			//数据解密
+			if mine.isEncodeData {
+				SecurityUtil.Mapping(data, n)
+			}
 
-		//从代理端读取到的数据立即发送目标端
-		err = TcpUtil.WriteAll(mine.TargetTCP, data[:length])
-		if err != nil {
+			//从代理端读取到的数据立即发送目标端
+			writeErr := TcpUtil.WriteAll(mine.TargetTCP, data[:n])
+			if writeErr != nil {
+				break
+			}
+		}
+		if readErr != nil {
 			break
 		}
 	}
@@ -77,19 +79,21 @@ func (mine *TCPBridge) receiveByNpsSendToTarget() {
 func (mine *TCPBridge) receiveByTargetSendToNps() {
 	data := make([]uint8, READ_CACHE_SIZE)
 	for {
-		length, err := mine.TargetTCP.Read(data)
-		if err != nil {
-			break
-		}
+		n, readErr := mine.TargetTCP.Read(data)
+		if n > 0 {
 
-		//数据解密
-		if mine.isEncodeData {
-			SecurityUtil.Mapping(data, length)
-		}
+			//数据解密
+			if mine.isEncodeData {
+				SecurityUtil.Mapping(data, n)
+			}
 
-		//往NPS服务器发送数据
-		err = TcpUtil.WriteAll(mine.NpsTCP, data[:length])
-		if err != nil {
+			//往NPS服务器发送数据
+			writeErr := TcpUtil.WriteAll(mine.NpsTCP, data[:n])
+			if writeErr != nil {
+				break
+			}
+		}
+		if readErr != nil {
 			break
 		}
 	}

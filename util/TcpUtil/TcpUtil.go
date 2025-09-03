@@ -26,21 +26,23 @@ func WriteAll(tcp net.Conn, data []uint8) error {
 }
 
 // ReadNByte 读取指定长度数据
-func ReadNByte(tcp net.Conn, n int) ([]uint8, error) {
+func ReadNByte(tcp net.Conn, len int) ([]uint8, error) {
 
 	//记录已经读取到的数据大小
 	var readLen = 0
-	data := make([]uint8, n)
+	data := make([]uint8, len)
 	for {
-		buffer := make([]uint8, n-readLen)
-		le, err := tcp.Read(buffer)
-		if err != nil {
-			return nil, err
+		buffer := make([]uint8, len-readLen)
+		n, readErr := tcp.Read(buffer)
+		if n > 0 {
+			copy(data[readLen:readLen+n], buffer[:n])
+			readLen += n
+			if readLen == len {
+				break
+			}
 		}
-		copy(data[readLen:readLen+le], buffer[:le])
-		readLen += le
-		if readLen == n {
-			break
+		if readErr != nil {
+			return nil, readErr
 		}
 	}
 	return data, nil
