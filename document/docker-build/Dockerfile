@@ -1,5 +1,6 @@
 FROM ubuntu:24.10
 
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
 
 #安装curl
