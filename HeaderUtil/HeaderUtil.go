@@ -1,7 +1,8 @@
 package HeaderUtil
 
 import (
-	"DairoNPC/util/TcpUtil"
+	"DairoNPC/util/WriterUtil"
+	"io"
 	"net"
 )
 
@@ -43,14 +44,15 @@ const SECURITY_CLIENT_KEY = 7
 func GetHeader(clientSocket net.Conn) (string, error) {
 
 	//读取一个字节,该字节代表key长度
-	lenData, err := TcpUtil.ReadNByte(clientSocket, 1)
-	if err != nil {
+	headerLenData := make([]byte, 1)
+	if _, err := io.ReadFull(clientSocket, headerLenData); err != nil {
 		return "", err
 	}
 
 	//得到头部部分数据长度
-	headerLen := lenData[0]
-	headerData, err := TcpUtil.ReadNByte(clientSocket, int(headerLen))
+	headerLen := headerLenData[0]
+	headerData := make([]byte, headerLen)
+	_, err := io.ReadFull(clientSocket, headerData)
 	if err != nil {
 		return "", err
 	}
@@ -68,5 +70,5 @@ func SendFlag(tcp net.Conn, flag uint8, header string) error {
 		//向服务器端发送客户端ID信息
 		data = append(data, []uint8(header)...)
 	}
-	return TcpUtil.WriteAll(tcp, data)
+	return WriterUtil.WriteFull(tcp, data)
 }

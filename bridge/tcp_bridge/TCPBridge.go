@@ -2,7 +2,7 @@ package tcp_bridge
 
 import (
 	"DairoNPC/util/SecurityUtil"
-	"DairoNPC/util/TcpUtil"
+	"DairoNPC/util/WriterUtil"
 	"net"
 )
 
@@ -54,8 +54,7 @@ func (mine *TCPBridge) receiveByNpsSendToTarget() {
 			}
 
 			//从代理端读取到的数据立即发送目标端
-			writeErr := TcpUtil.WriteAll(mine.TargetTCP, data[:n])
-			if writeErr != nil {
+			if err := WriterUtil.WriteFull(mine.TargetTCP, data[:n]); err != nil {
 				break
 			}
 		}
@@ -88,8 +87,7 @@ func (mine *TCPBridge) receiveByTargetSendToNps() {
 			}
 
 			//往NPS服务器发送数据
-			writeErr := TcpUtil.WriteAll(mine.NpsTCP, data[:n])
-			if writeErr != nil {
+			if err := WriterUtil.WriteFull(mine.NpsTCP, data[:n]); err != nil {
 				break
 			}
 		}

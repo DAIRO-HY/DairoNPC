@@ -7,8 +7,8 @@ import (
 	"DairoNPC/pool/tcp_pool"
 	"DairoNPC/pool/udp_pool"
 	"DairoNPC/util/SecurityUtil"
-	"DairoNPC/util/TcpUtil"
 	"fmt"
+	"io"
 	"net"
 	"strconv"
 	"time"
@@ -61,8 +61,8 @@ func (mine *NPCSession) readServerInfoAndReceive() {
 func (mine *NPCSession) readClientId() error {
 
 	//第一个字节为标记
-	flagData, err := TcpUtil.ReadNByte(mine.npsTCP, 1)
-	if err != nil {
+	flagData := make([]byte, 1)
+	if _, err := io.ReadFull(mine.npsTCP, flagData); err != nil {
 		return err
 	}
 	if flagData[0] != HeaderUtil.SERVER_TO_CLIENT_ID {
@@ -88,8 +88,8 @@ func (mine *NPCSession) readClientId() error {
 
 // 客户端加解密秘钥
 func (mine *NPCSession) readClientSecurityKey() error {
-	clientSecurityKey, err := TcpUtil.ReadNByte(mine.npsTCP, 256)
-	if err != nil {
+	clientSecurityKey := make([]byte, 256)
+	if _, err := io.ReadFull(mine.npsTCP, clientSecurityKey); err != nil {
 		return err
 	}
 
@@ -103,8 +103,8 @@ func (mine *NPCSession) readClientSecurityKey() error {
  */
 func (mine *NPCSession) receive() {
 	for {
-		flagData, err := TcpUtil.ReadNByte(mine.npsTCP, 1)
-		if err != nil {
+		flagData := make([]byte, 1)
+		if _, err := io.ReadFull(mine.npsTCP, flagData); err != nil {
 			return
 		}
 		flag := flagData[0]
